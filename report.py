@@ -13,12 +13,10 @@ from datetime import datetime as dt
 from email_report.sentEmail import EmailConfig
 
 class DailyStatus:
-
     """
      Functionality of this class is to take daily status report from user , write it to output file
      and sent report mail to respective receipent mention in config file.
     """
-
     def __init__(self):
 
         config_path =  '/configfiles/config.ini'
@@ -38,12 +36,34 @@ class DailyStatus:
         self.output = []
 
     def user_inputs(self):
+        """
+        :Description:
+            - The primary function of this method is to take the input from user.
+
+        :Parameter: None
+
+        :Example: None
+
+        :Return: None
+        """
         for item in self.input_contents:
             usrip = raw_input("\nEnter data for %s"%item + ": \n" )
             self.validate_inputs(item,usrip)
 
     def validate_anum_special_char(self, inputs, length='255'):
+        """
+        :Description:
+            - The primary function of this method is to validate alphanumeric values
+            and some special characters(!@#$%^&*()).
 
+        :Parameter:
+            - inputs - Accepts inputs.
+            - length - It defines the length of the string and by default its value is 255.
+
+        :Example: ''validate_anum_special_char('Python',300)''
+
+        :Return: Bool
+        """
         valid = re.search('^[\w.!@#$%^&*()\s]{1,' + length + '}$', inputs)
 
         if valid and self.delimiter not in inputs:
@@ -57,6 +77,18 @@ class DailyStatus:
             self.validate_anum_special_char(raw_input("\nPlease enter valid data : \n"))
 
     def validate_team_member(self,inputs,length='100'):
+        """
+        :Description:
+            - The primary function of this method is to validate alphanumeric values.
+
+        :Parameter:
+            - inputs - Accepts inputs.
+            - length - It defines the length of the string and by default its value is 100.
+
+        :Example: ''validate_team_member('Python',300)''
+
+        :Return: Bool
+        """
         valid = re.search('^[\w.\s]{1,' + length + '}$', inputs)
 
         if valid and self.delimiter not in inputs:
@@ -70,7 +102,18 @@ class DailyStatus:
             self.validate_team_member(raw_input("\nPlease enter valid data : \n"))
 
     def validate_start_date(self,inputs):
+        """
+        :Description:
+            - The primary function of this method is to validate date and
+            check it should not take future date.
 
+        :Parameter:
+            - inputs - Accepts inputs.
+
+        :Example: ''validate_start_date('30/10/2018')''
+
+        :Return: Bool
+        """
         try:
             entered_date = (dt.strptime(inputs, str(self.date_format))).strftime(str(self.date_format))
             cur_date = dt.now().strftime(self.date_format)
@@ -88,6 +131,18 @@ class DailyStatus:
             self.validate_start_date(raw_input("\nPlease enter valid data : \n"))
 
     def validate_end_date(self,inputs):
+        """
+        :Description:
+            - The primary function of this method is to validate date and
+            check it should not take future date.
+
+        :Parameter:
+            - inputs - Accepts inputs.
+
+        :Example: ''validate_end_date('31/10/2018')''
+
+        :Return: Bool
+        """
         try:
             entered_date = (dt.strptime(inputs, str(self.date_format))).strftime(str(self.date_format))
             cur_date = dt.now().strftime(self.date_format)
@@ -146,7 +201,16 @@ class DailyStatus:
             print "Invalid Input"
 
     def write_to_file(self):
+        """
+        :Description:
+            - The primary function of this method is to write contents to the file
 
+        :Parameter: None
+
+        :Example:
+
+        :Return: None
+        """
         with open(self.file_path+self.file_name,'a') as fp:
             opt = self.output
             for ele in range(len(opt)-1):
@@ -155,16 +219,26 @@ class DailyStatus:
             fp.write(opt[-1]+"\n")
 
     def parse_output_list(self):
+        """
+        :Description:
+            - The primary function of this method is to parse output list
+
+        :Parameter: None
+
+        :Example:
+
+        :Return: List
+        """
         return self.output
 
-
-cd = DailyStatus()
-cd.user_inputs()
-cd.write_to_file()
-EC = EmailConfig()
-lst = cd.parse_output_list()
-body = EC.create_template(lst)
-sub = cd.email_subject
-to = cd.to_emailid
-From = cd.from_emailid
-EC.sent_email(sub,body,to,From)
+if __name__ == '__main__' :
+    cd = DailyStatus()
+    cd.user_inputs()
+    cd.write_to_file()
+    EC = EmailConfig()
+    lst = cd.parse_output_list()
+    body = EC.create_template(lst)
+    sub = cd.email_subject
+    to = cd.to_emailid
+    From = cd.from_emailid
+    EC.sent_email(sub, body, to, From)
